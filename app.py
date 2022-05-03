@@ -2,7 +2,7 @@ from flask import Flask, render_template, Response
 import cv2
 
 app = Flask(__name__)
-camera = cv2.VideoCapture(1)
+camera = cv2.VideoCapture(0)
 
 
 def generate_frames():
@@ -31,4 +31,9 @@ def video():
 
 
 if __name__ == "__main__":
-    app.run(debug=True,host='0.0.0.0', port=5000)
+    try:
+
+        app.run(debug=True, host='0.0.0.0', port=5000)
+    except KeyboardInterrupt:
+        camera.release()
+        print('KeyboardInterrupt exception is caught')
