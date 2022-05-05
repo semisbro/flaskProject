@@ -9,3 +9,5 @@ numpy==1.22.3
 opencv-python==4.5.5.64
 Werkzeug==2.1.2
 zipp==3.8.0
+flask-celery
+redis
