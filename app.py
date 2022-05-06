@@ -24,6 +24,7 @@ def generate_frames():
 """
 def get_picture():
         camera = PiCamera()
+
         camera.capture('picture.jpg')
         camera.stop_preview()
 
