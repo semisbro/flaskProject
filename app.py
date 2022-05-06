@@ -44,6 +44,7 @@ if __name__ == "__main__":
     try:
 
         app.run(debug=True, host='0.0.0.0', port=5000)
+        get_picture()
     except KeyboardInterrupt:
         camera.release()
         print('KeyboardInterrupt exception is caught')
