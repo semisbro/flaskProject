@@ -1,4 +1,4 @@
-import socket, select, Queue
+import socket, select, queue
 
 from flask import Flask, jsonify
 from celery import Celery
