@@ -38,6 +38,7 @@ def listen_to_udp():
     s1.bind(('0.0.0.0', 1337))
     s2 = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_UDP)
     s2.bind(('0.0.0.0', 1337))
+    print("task is running")
     while True:
         r, w, x = select.select([s1, s2], [], [])
         for i in r:
