@@ -37,9 +37,6 @@ def listen_to_udp():
     """
     import json
     import socket
-    import dronekit
-    import dronekit_sitl
-    from dronekit import connect
     import dronekit_sitl
 
     sitl = dronekit_sitl.start_default()
