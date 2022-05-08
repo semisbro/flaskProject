@@ -28,7 +28,7 @@ app.config.update(
 celery = make_celery(app)
 
 
-@celery.task(name="udp_work")
+@celery.task(name="udp_work_cel")
 def listen_to_udp():
     """
     This code was taken from
