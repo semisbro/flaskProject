@@ -3,7 +3,6 @@ import socket, select, queue
 from flask import Flask, jsonify
 from celery import Celery
 
-
 def make_celery(app):
     celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
     celery.conf.update(app.config)
@@ -34,13 +33,14 @@ def listen_to_udp():
     This code was taken from
     https://stackoverflow.com/questions/9969259/python-raw-socket-listening-for-udp-packets-only-half-of-the-packets-received
     """
-    s1 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s1.bind(('0.0.0.0', 1337))
-    s2 = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_UDP)
-    s2.bind(('0.0.0.0', 1337))
+    udp_socket: socket.socket
+    udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    udp_socket.bind(('0.0.0.0', 1337))
+    #  s2 = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_UDP)
+    #  s2.bind(('0.0.0.0', 1337))
     print("task is running")
     while True:
-        r, w, x = select.select([s1, s2], [], [])
+        r, w, x = select.select([udp_socket], [], [])
         for i in r:
             print((i, i.recvfrom(131072)))
 
@@ -49,6 +49,8 @@ def listen_to_udp():
 def test_home():
     listen_to_udp.delay()
     d = {"status": "alive"}
+    print("server is running")
+
 
     return jsonify(d)
 
