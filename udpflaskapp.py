@@ -33,6 +33,8 @@ def listen_to_udp():
     This code was taken from
     https://stackoverflow.com/questions/9969259/python-raw-socket-listening-for-udp-packets-only-half-of-the-packets-received
     """
+    print("task is running")
+
     udp_socket: socket.socket
     udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     udp_socket.bind(('0.0.0.0', 1337))
