@@ -38,12 +38,12 @@ def listen_to_udp():
     """
     import json
     import socket
-    # import dronekit_sitl
+    import dronekit_sitl
 
-    # sitl = dronekit_sitl.start_default()
-    # connection_string = sitl.connection_string()
+    sitl = dronekit_sitl.start_default()
+    connection_string = sitl.connection_string()
 
-    # Import DroneKit-Python
+    #Import DroneKit-Python
     from dronekit import connect, VehicleMode
 
     print("Start simulator (SITL)")
@@ -52,7 +52,7 @@ def listen_to_udp():
     localPort = 9000
     bufferSize = 1024
 
-    # vehicle = connect(connection_string, wait_ready=True)
+    vehicle = connect(connection_string, wait_ready=True)
 
     # Create a datagram socket
 
@@ -68,11 +68,11 @@ def listen_to_udp():
 
     while True:
         bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
-        latitude = 48.777111
-        longitude = 9.180770
+        # latitude = 48.777111
+        #longitude = 9.180770
 
-        #   latitude = vehicle.location.global_relative_frame.lat
-        #   longitude = vehicle.location.global_relative_frame.lon
+        latitude = vehicle.location.global_relative_frame.lat
+        longitude = vehicle.location.global_relative_frame.lon
         print(latitude)
         print(longitude)
         map_dat = dict(latitude=latitude, longitude=longitude)
