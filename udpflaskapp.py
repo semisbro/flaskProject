@@ -1,7 +1,9 @@
 import socket, select, queue
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, Response, render_template
 from celery import Celery
+
+import cv2
 
 
 def make_celery(app):
@@ -27,6 +29,33 @@ app.config.update(
 )
 celery = make_celery(app)
 
+camera = cv2.VideoCapture(0)
+
+
+def generate_frames():
+    while True:
+
+        ## read the camera frame
+        success, frame = camera.read()
+        if not success:
+            break
+        else:
+            ret, buffer = cv2.imencode('.jpg', frame)
+            frame = buffer.tobytes()
+
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+
+@app.route('/video')
+def video():
+    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+@app.route('/stream')
+def index():
+    return render_template('index.html')
+
 
 @celery.task(name="udp_work_cel")
 def listen_to_udp():
@@ -38,12 +67,13 @@ def listen_to_udp():
     """
     import json
     import socket
-    #import dronekit_sitl
+    # SITL not working on Rpi
+    # import dronekit_sitl
 
-    #sitl = dronekit_sitl.start_default()
-    #connection_string = sitl.connection_string()
+    # sitl = dronekit_sitl.start_default()
+    # connection_string = sitl.connection_string()
 
-    #Import DroneKit-Python
+    # Import DroneKit-Python
     from dronekit import connect, VehicleMode
 
     print("Start simulator (SITL)")
@@ -52,8 +82,7 @@ def listen_to_udp():
     localPort = 20002
     bufferSize = 1024
 
-
-    #vehicle = connect(connection_string, wait_ready=True)
+    # vehicle = connect(connection_string, wait_ready=True)
 
     # Create a datagram socket
 
@@ -70,10 +99,10 @@ def listen_to_udp():
     while True:
         bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
         latitude = 48.781391
-        longitude =  9.180812
+        longitude = 9.180812
 
-        #latitude = vehicle.location.global_relative_frame.lat
-        #longitude = vehicle.location.global_relative_frame.lon
+        # latitude = vehicle.location.global_relative_frame.lat
+        # longitude = vehicle.location.global_relative_frame.lon
         print(latitude)
         print(longitude)
         map_dat = dict(latitude=latitude, longitude=longitude)
