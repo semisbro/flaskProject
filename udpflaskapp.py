@@ -50,7 +50,7 @@ def listen_to_udp():
 
     print("Start simulator (SITL)")
 
-    localIP = "192.168.0.104"
+    localIP = "0.0.0.0"
     localPort = 20002
     bufferSize = 1024
 
