@@ -3,6 +3,7 @@ import socket, select, queue
 from flask import Flask, jsonify
 from celery import Celery
 
+
 def make_celery(app):
     celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
     celery.conf.update(app.config)
@@ -37,10 +38,10 @@ def listen_to_udp():
     """
     import json
     import socket
-    import dronekit_sitl
+    # import dronekit_sitl
 
-    sitl = dronekit_sitl.start_default()
-    connection_string = sitl.connection_string()
+    # sitl = dronekit_sitl.start_default()
+    # connection_string = sitl.connection_string()
 
     # Import DroneKit-Python
     from dronekit import connect, VehicleMode
@@ -51,7 +52,7 @@ def listen_to_udp():
     localPort = 20002
     bufferSize = 1024
 
-    vehicle = connect(connection_string, wait_ready=True)
+    # vehicle = connect(connection_string, wait_ready=True)
 
     # Create a datagram socket
 
@@ -67,9 +68,11 @@ def listen_to_udp():
 
     while True:
         bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
+        latitude = 48.777111
+        longitude = 9.180770
 
-        latitude = vehicle.location.global_relative_frame.lat
-        longitude = vehicle.location.global_relative_frame.lon
+        #   latitude = vehicle.location.global_relative_frame.lat
+        #   longitude = vehicle.location.global_relative_frame.lon
         print(latitude)
         print(longitude)
         map_dat = dict(latitude=latitude, longitude=longitude)
@@ -90,18 +93,18 @@ def listen_to_udp():
         # Sending a reply to client
 
         UDPServerSocket.sendto(bytesToSend, address)
-    #print("task is running")
+    # print("task is running")
 
-    #udp_socket: socket.socket
+    # udp_socket: socket.socket
     ##udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    #udp_socket.bind(('0.0.0.0', 1337))
+    # udp_socket.bind(('0.0.0.0', 1337))
     #  s2 = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_UDP)
     #  s2.bind(('0.0.0.0', 1337))
-    #print("task is running")
-    #while True:
-      #  r, w, x = select.select([udp_socket], [], [])
-     #   for i in r:
-       #     print((i, i.recvfrom(131072)))
+    # print("task is running")
+    # while True:
+    #  r, w, x = select.select([udp_socket], [], [])
+    #   for i in r:
+    #     print((i, i.recvfrom(131072)))
 
 
 @app.route("/")
@@ -109,7 +112,6 @@ def test_home():
     listen_to_udp.delay()
     d = {"status": "alive"}
     print("server is running")
-
 
     return jsonify(d)
 
