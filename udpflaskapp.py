@@ -52,6 +52,7 @@ def listen_to_udp():
     localPort = 20002
     bufferSize = 1024
 
+
     #vehicle = connect(connection_string, wait_ready=True)
 
     # Create a datagram socket
@@ -68,8 +69,8 @@ def listen_to_udp():
 
     while True:
         bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
-        latitude = 48.777111
-        longitude = 9.180770
+        latitude = 48.781391
+        longitude =  9.180812
 
         #latitude = vehicle.location.global_relative_frame.lat
         #longitude = vehicle.location.global_relative_frame.lon
