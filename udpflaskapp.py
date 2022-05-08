@@ -49,7 +49,7 @@ def listen_to_udp():
     print("Start simulator (SITL)")
 
     localIP = "0.0.0.0"
-    localPort = 20002
+    localPort = "9000"
     bufferSize = 1024
 
     # vehicle = connect(connection_string, wait_ready=True)
