@@ -24,7 +24,6 @@ def make_celery(app):
 
 camera = cv2.VideoCapture(0)
 
-
 app = Flask(__name__)
 app.config.update(
     CELERY_BROKER_URL='redis://localhost:6379',
