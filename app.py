@@ -2,7 +2,6 @@ from flask import Flask, render_template, Response
 import cv2
 from time import sleep
 
-
 app = Flask(__name__)
 camera = cv2.VideoCapture(0)
 
