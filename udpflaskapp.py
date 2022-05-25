@@ -24,6 +24,8 @@ def make_celery(app):
     return celery
 
 
+camera = cv2.VideoCapture(0)
+
 app = Flask(__name__)
 app.config.update(
     CELERY_BROKER_URL='redis://localhost:6379',
@@ -31,7 +33,6 @@ app.config.update(
 )
 celery = make_celery(app)
 
-camera = cv2.VideoCapture(0)
 
 
 def generate_frames():
