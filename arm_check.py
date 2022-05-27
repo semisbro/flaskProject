@@ -2,7 +2,7 @@ from datetime import time
 
 import dronekit
 
-vehicle = dronekit.connect('/dev/ttyAMA0', wait_ready=True,baud=57600)
+vehicle = dronekit.connect('/dev/ttyUSB0', wait_ready=True,baud=57600)
 
 def arm_and_takeoff(aTargetAltitude):
     """
