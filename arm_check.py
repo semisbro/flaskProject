@@ -1,8 +1,8 @@
 from datetime import time
 
-from dronekit import connect, VehicleMode
+import dronekit
 
-vehicle = connect('tcp:127.0.0.1:5760', wait_ready=True)
+vehicle = dronekit.connect('tcp:127.0.0.1:5760', wait_ready=True)
 
 def arm_and_takeoff(aTargetAltitude):
     """
@@ -17,7 +17,7 @@ def arm_and_takeoff(aTargetAltitude):
 
     print("Arming motors")
     # Copter should arm in GUIDED mode
-    vehicle.mode    = VehicleMode("GUIDED")
+    vehicle.mode    = dronekit.VehicleMode("GUIDED")
     vehicle.armed   = True
 
     # Confirm vehicle armed before attempting to take off
