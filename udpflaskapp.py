@@ -4,7 +4,6 @@ from flask import Flask, jsonify, Response, render_template
 from celery import Celery
 import psutil
 
-
 import cv2
 
 
@@ -34,7 +33,6 @@ app.config.update(
 celery = make_celery(app)
 
 
-
 def generate_frames():
     while True:
 
@@ -44,10 +42,13 @@ def generate_frames():
             break
         else:
             encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 60]
-            ret, buffer = cv2.imencode('.jpg', frame,encode_param)
+            ret, buffer = cv2.imencode('.jpg', frame, encode_param)
             frame = buffer.tobytes()
-            fps = video.get(cv2.cv.CV_CAP_PROP_FPS)
-            print("Frames per second using video.get(cv2.cv.CV_CAP_PROP_FPS): {0}".format(fps))
+            #fps = video.get(cv2.cv.CV_CAP_PROP_FPS)
+
+            #print("Frames per second using video.get(cv2.cv.CV_CAP_PROP_FPS): {0}".format(fps))
+
+            print(psutil.cpu_percent())
 
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
