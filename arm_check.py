@@ -3,7 +3,7 @@ import time
 import dronekit
 
 vehicle = dronekit.connect('/dev/ttyAMA0')
-vehicle.wait_ready(True, timeout=500)
+vehicle.wait_ready(True, timeout=1000)
 
 
 def arm_and_takeoff(aTargetAltitude):
