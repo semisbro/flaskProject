@@ -13,3 +13,4 @@ flask-celery
 redis
 dronekit==2.9.2
 dronekit-sitl==3.3.0
+GPUtil
