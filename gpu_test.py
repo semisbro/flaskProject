@@ -4,12 +4,12 @@ import time
 
 import dronekit
 from dronekit import connect
-import dronekit_sitl
+#import dronekit_sitl
 import psutil
 import GPUtil
 
-sitl = dronekit_sitl.start_default()
-connection_string = sitl.connection_string()
+#sitl = dronekit_sitl.start_default()
+#connection_string = sitl.connection_string()
 
 # Import DroneKit-Python
 from dronekit import connect, VehicleMode
