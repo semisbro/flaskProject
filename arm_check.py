@@ -2,8 +2,8 @@ import time
 
 import dronekit
 
-vehicle = dronekit.connect('/dev/ttyAMA0')
-vehicle.wait_ready(True, timeout=1000)
+vehicle = dronekit.connect("127.0.0.1:14550")
+vehicle.wait_ready(True, timeout=5000)
 
 
 def arm_and_takeoff(aTargetAltitude):
