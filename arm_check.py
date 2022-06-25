@@ -2,7 +2,7 @@ import time
 
 import dronekit
 
-vehicle = dronekit.connect("127.0.0.1:14550")
+vehicle = dronekit.connect("127.0.0.1:14550",baud=57600)
 vehicle.wait_ready(True, timeout=5000)
 
 
