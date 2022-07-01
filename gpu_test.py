@@ -78,7 +78,7 @@ while True:
                      "gpu_temp": gpu.temperature
                      }
 
-    print( msgFromClient)
+    print(msgFromClient)
     bytesToSend = json.dumps(msgFromClient).encode('utf-8')
 
     #latitude = vehicle.location.global_relative_frame.lat

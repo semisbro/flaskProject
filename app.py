@@ -38,32 +38,32 @@ def generate_frames():
             frame = np.dstack([frame, frame, frame])
 
 
-            #encode_param = [int(cv2.IMWRITE_JPEG_OPTIMIZE), 60]
-           # ret, buffer = cv2.imencode('.jpeg', frame,encode_param)
+            encode_param = [int(cv2.IMWRITE_JPEG_OPTIMIZE), 60]
+            ret, buffer = cv2.imencode('.jpeg', frame,encode_param)
+
 
             # time when we finish processing for this frame
             new_frame_time = time.time()
 
             # Calculating the fps
 
-            my_image = Image.fromarray(frame)
-            d1 = ImageDraw.Draw(my_image)
+            #my_image = Image.fromarray(frame)
+            #d1 = ImageDraw.Draw(my_image)
 
             # converting the fps into integer
 
             fps = 1 / (new_frame_time - prev_frame_time)
             prev_frame_time = new_frame_time
-            fps_real = camera.get(cv2.CAP_PROP_FPS)
-
 
 
             fps = int(fps)
+            print("Running at"+str(fps) +"fps")
 
-            d1.text((0, 0), "Running at :"+" "+str(fps_real)+ " FPS", fill=(255, 0, 0))
-            img_byte_arr = io.BytesIO()
-            my_image.save(img_byte_arr, format='JPEG')
+            #d1.text((0, 0), "Running at :"+" "+str(fps_real)+ " FPS", fill=(255, 0, 0))
+            #img_byte_arr = io.BytesIO()
+            #my_image.save(img_byte_arr, format='JPEG')
 
-            img_byte_arr = img_byte_arr.getvalue()
+            #img_byte_arr = img_byte_arr.getvalue()
 
 
 
@@ -73,13 +73,13 @@ def generate_frames():
 
 
 
-            #frame = buffer.tobytes()
+            frame = buffer.tobytes()
 
 
 
 
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + img_byte_arr + b'\r\n')
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 
 @app.route('/')
