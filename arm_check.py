@@ -6,6 +6,7 @@ vehicle = dronekit.connect("127.0.0.1:14550",baud=57600)
 vehicle.wait_ready(True, timeout=5000)
 
 
+#vehicle.
 def arm_and_takeoff(aTargetAltitude):
     """
     Arms vehicle and fly to aTargetAltitude.

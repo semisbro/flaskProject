@@ -43,10 +43,10 @@ def generate_frames():
         if not success:
             break
         else:
-            encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 60]
-            ret, buffer = cv2.imencode('.jpg', frame,encode_param)
+
+            ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
-            fps = video.get(cv2.cv.CV_CAP_PROP_FPS)
+            fps = camera.get(cv2.cv.CV_CAP_PROP_FPS)
             print("Frames per second using video.get(cv2.cv.CV_CAP_PROP_FPS): {0}".format(fps))
 
         yield (b'--frame\r\n'

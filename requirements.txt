@@ -13,4 +13,9 @@ flask-celery
 redis
 dronekit==2.9.2
 dronekit-sitl==3.3.0
-GPUtil
+GPUtil~=1.4.0
+imutils~=0.5.4
+psutil~=5.9.0
+mavsdk~=1.4.0
+celery~=5.2.6
+tqdm~=4.64.0
