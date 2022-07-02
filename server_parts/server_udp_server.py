@@ -29,7 +29,7 @@ bytesToSend = str.encode(msgFromServer)
 
 UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
-print("started a server " + localIP + str(localPort))
+print("started a server " + localIP + " "+str(localPort))
 
 # Bind to address and ip
 
@@ -44,11 +44,18 @@ while True:
     bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
     message_from_client = bytesAddressPair[0]
 
+
     print("message_from_client")
 
+    message_from_client_str = message_from_client.decode("utf-8")
 
-    print(message_from_client.decode("utf-8") )
+    print(message_from_client_str)
 
+    controls_dict :dict = json.loads(message_from_client_str)
+    if controls_dict.__contains__("axisLZ"):
+        controls_dict.get("s_dict")
+
+    print(type(controls_dict))
 
     gpus = GPUtil.getGPUs()
     list_gpus = []
