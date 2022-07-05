@@ -37,8 +37,7 @@ def generate_frames():
             frame = np.dstack([frame, frame, frame])
 
 
-            encode_param = [int(cv2.IMWRITE_JPEG_OPTIMIZE), 40]
-            ret, buffer = cv2.imencode('.jpeg', frame,encode_param)
+            ret, buffer = cv2.imencode('.jpeg', frame)
 
 
             # time when we finish processing for this frame
