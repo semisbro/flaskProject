@@ -29,7 +29,7 @@ bytesToSend = str.encode(msgFromServer)
 
 UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
-print("started a server " + localIP + " "+str(localPort))
+print("started a server " + localIP + " " + str(localPort))
 
 # Bind to address and ip
 
@@ -44,14 +44,13 @@ while True:
     bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
     message_from_client = bytesAddressPair[0]
 
-
     print("message_from_client")
 
     message_from_client_str = message_from_client.decode("utf-8")
 
     print(message_from_client_str)
 
-    controls_dict :dict = json.loads(message_from_client_str)
+    controls_dict: dict = json.loads(message_from_client_str)
     if controls_dict.__contains__("axisLZ"):
         controls_dict.get("s_dict")
 
@@ -82,19 +81,18 @@ while True:
     svmem = psutil.virtual_memory()
     cpufreq = psutil.cpu_freq()
     drone_stats_msg = {"cpu_core_phy": psutil.cpu_count(logical=False),
-                     "cpu_core_total": psutil.cpu_count(logical=True),
-                     # "cpu_freq_max": cpufreq.max,
-                     # "cpu_freq_min": cpufreq.min,
-                     "cpu_freq_curr": cpufreq.current,
-                     "cpu_freq_perc_simple": psutil.cpu_percent(),
-                     "ram_used": svmem.percent,
-                     "gpu_name": gpu.name,
-                     "gpu_used": gpu.load * 100,
-                     "gpu_temp": gpu.temperature,
-                     "latitude": 48.7943178,
-                     "longitude": 9.1902554,
-
-                     }
+                       "cpu_core_total": psutil.cpu_count(logical=True),
+                       # "cpu_freq_max": cpufreq.max,
+                       # "cpu_freq_min": cpufreq.min,
+                       "cpu_freq_curr": cpufreq.current,
+                       "cpu_freq_perc_simple": psutil.cpu_percent(),
+                       "ram_used": svmem.percent,
+                       "gpu_name": gpu.name,
+                       "gpu_used": gpu.load * 100,
+                       "gpu_temp": gpu.temperature,
+                       "latitude": 48.7943178,
+                       "longitude": 9.1902554,
+                       }
 
     print(drone_stats_msg)
     bytesToSend = json.dumps(drone_stats_msg).encode('utf-8')
