@@ -11,9 +11,8 @@ from PIL import Image, ImageFont, ImageDraw
 
 
 app = Flask(__name__)
-camera = cv2.VideoCapture(0,cv2.CAP_ANY)
-camera.set(cv2.CAP_PROP_FPS,60)
-camera.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
+camera = cv2.VideoCapture(3)
+
 
 
 
