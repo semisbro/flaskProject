@@ -32,9 +32,9 @@ def generate_frames():
             break
         else:
 
-            frame = imutils.resize(frame, width=500, height=500)
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            frame = np.dstack([frame, frame, frame])
+            #frame = imutils.resize(frame, width=500, height=500)
+           # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+           # frame = np.dstack([frame, frame, frame])
 
 
             ret, buffer = cv2.imencode('.jpeg', frame)
