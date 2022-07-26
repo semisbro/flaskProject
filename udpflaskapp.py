@@ -1,11 +1,16 @@
 import socket, select, queue
+import time
 
+import GPUtil
+import imutils
 from flask import Flask, jsonify, Response, render_template
 from celery import Celery
 import psutil
 
 
 import cv2
+from imutils.video import VideoStream
+from pymavlink import mavutil
 
 
 def make_celery(app):
@@ -24,7 +29,7 @@ def make_celery(app):
     return celery
 
 
-camera = cv2.VideoCapture(0)
+vs = VideoStream(src=3).start()
 
 app = Flask(__name__)
 app.config.update(
@@ -36,21 +41,23 @@ celery = make_celery(app)
 
 
 def generate_frames():
-    while True:
+        while True:
 
-        ## read the camera frame
-        success, frame = camera.read()
-        if not success:
-            break
-        else:
+            ## read the camera frame
+            frame = vs.read()
+            frame = imutils.resize(frame, width=400)
+            # gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            # gray = cv2.GaussianBlur(gray, (7, 7), 0)
 
-            ret, buffer = cv2.imencode('.jpg', frame)
-            frame = buffer.tobytes()
-            fps = camera.get(cv2.cv.CV_CAP_PROP_FPS)
-            print("Frames per second using video.get(cv2.cv.CV_CAP_PROP_FPS): {0}".format(fps))
+            # encode the frame in JPEG format
+            (flag, encodedImage) = cv2.imencode(".jpeg", frame)
+            # ensure the frame was successfully encoded
+            if not flag:
+                continue
 
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+            yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
+                   bytearray(encodedImage) + b'\r\n')
+
 
 
 @app.route('/video')
@@ -88,7 +95,7 @@ def listen_to_udp():
     localPort = 20002
     bufferSize = 1024
 
-    # vehicle = connect(connection_string, wait_ready=True)
+    vehicle = connect( wait_ready=True)
 
     # Create a datagram socket
 
@@ -104,43 +111,67 @@ def listen_to_udp():
 
     while True:
         bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
-        latitude = 48.781391
-        longitude = 9.180812
+        message_from_client = bytesAddressPair[0]
 
-        # latitude = vehicle.location.global_relative_frame.lat
-        # longitude = vehicle.location.global_relative_frame.lon
-        print(latitude)
-        print(longitude)
-        map_dat = dict(latitude=latitude, longitude=longitude)
+        print("message_from_client")
 
-        message = bytesAddressPair[0]
+        message_from_client_str = message_from_client.decode("utf-8")
 
-        address = bytesAddressPair[1]
+        print(message_from_client_str)
 
-        clientMsg = "Message from Client:{}".format(message)
-        clientIP = "Client IP Address:{}".format(address)
+        controls_dict: dict = json.loads(message_from_client_str)
 
-        # print(clientMsg)
-        # print(clientIP)
-        msgFromServer = 'Empty'
+        if controls_dict.__contains__("axisLZ"):
+            controls_dict.get("")
 
-        bytesToSend: bytes = str.encode(json.dumps(map_dat))
 
-        # Sending a reply to client
+        print(type(controls_dict))
 
-        UDPServerSocket.sendto(bytesToSend, address)
-    # print("task is running")
+        gpus = GPUtil.getGPUs()
+        list_gpus = []
+        for gpu in gpus:
+            # get the GPU id
+            gpu_id = gpu.id
+            # name of GPU
+            gpu_name = gpu.name
+            # get % percentage of GPU usage of that GPU
+            gpu_load = f"{gpu.load * 100}%"
+            # get free memory in MB format
+            gpu_free_memory = f"{gpu.memoryFree}MB"
+            # get used memory
+            gpu_used_memory = f"{gpu.memoryUsed}MB"
+            # get total memory
+            gpu_total_memory = f"{gpu.memoryTotal}MB"
+            # get GPU temperature in Celsius
+            gpu_temperature = f"{gpu.temperature} °C"
+            gpu_uuid = gpu.uuid
+            list_gpus.append((
+                gpu_id, gpu_name, gpu_load, gpu_free_memory, gpu_used_memory,
+                gpu_total_memory, gpu_temperature, gpu_uuid
+            ))
+        svmem = psutil.virtual_memory()
+        cpufreq = psutil.cpu_freq()
+        drone_stats_msg = {"cpu_core_phy": psutil.cpu_count(logical=False),
+                           "cpu_core_total": psutil.cpu_count(logical=True),
+                           # "cpu_freq_max": cpufreq.max,
+                           # "cpu_freq_min": cpufreq.min,
+                           "cpu_freq_curr": cpufreq.current,
+                           "cpu_freq_perc_simple": psutil.cpu_percent(),
+                           "ram_used": svmem.percent,
+                           "gpu_name": gpu.name,
+                           "gpu_used": gpu.load * 100,
+                           "gpu_temp": gpu.temperature,
+                           "latitude": 48.7943178,
+                           "longitude": 9.1902554,
+                           }
 
-    # udp_socket: socket.socket
-    ##udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    # udp_socket.bind(('0.0.0.0', 1337))
-    #  s2 = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_UDP)
-    #  s2.bind(('0.0.0.0', 1337))
-    # print("task is running")
-    # while True:
-    #  r, w, x = select.select([udp_socket], [], [])
-    #   for i in r:
-    #     print((i, i.recvfrom(131072)))
+
+        print(drone_stats_msg)
+        client_address = bytesAddressPair[1]
+
+        bytesToSend = json.dumps(drone_stats_msg).encode('utf-8')
+
+        UDPServerSocket.sendto(bytesToSend, client_address)
 
 
 @app.route("/")
@@ -152,6 +183,35 @@ def test_home():
     return jsonify(d)
 
 
+def send_ned_velocity(vehicle,velocity_x, velocity_y, velocity_z, duration):
+    """
+    Move vehicle in direction based on specified velocity vectors.
+    """
+    msg = vehicle.message_factory.set_position_target_local_ned_encode(
+        0,       # time_boot_ms (not used)
+        0, 0,    # target system, target component
+        mavutil.mavlink.MAV_FRAME_LOCAL_NED, # frame
+        0b0000111111000111, # type_mask (only speeds enabled)
+        0, 0, 0, # x, y, z positions (not used)
+        velocity_x, velocity_y, velocity_z, # x, y, z velocity in m/s
+        0, 0, 0, # x, y, z acceleration (not supported yet, ignored in GCS_Mavlink)
+        0, 0)    # yaw, yaw_rate (not supported yet, ignored in GCS_Mavlink)
+
+
+    # send command to vehicle on 1 Hz cycle
+    for x in range(0,duration):
+        vehicle.send_mavlink(msg)
+        time.sleep(1)
+
 if __name__ == "__main__":
-    # run install.py to install dependencies and create the database
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    try:
+        # run install.py to install dependencies and create the database
+        app.run(host="0.0.0.0", port=5000, debug=False)
+    except:
+        vs.stop()
+        # camera.release()
+        print('KeyboardInterrupt exception is caught')
+
+
+
+
