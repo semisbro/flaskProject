@@ -183,6 +183,7 @@ def test_home():
 
 
 
+
 if __name__ == "__main__":
     try:
         # run install.py to install dependencies and create the database
