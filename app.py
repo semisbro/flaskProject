@@ -8,10 +8,11 @@ from time import sleep
 import time
 
 from PIL import Image, ImageFont, ImageDraw
-
+from imutils.video import VideoStream
 
 app = Flask(__name__)
-camera = cv2.VideoCapture(3)
+vs = VideoStream(src=0).start()
+
 
 
 
@@ -27,57 +28,25 @@ def generate_frames():
     while True:
 
         ## read the camera frame
-        success, frame = camera.read()
-        if not success:
-            break
-        else:
+        frame = vs.read()
+        frame = imutils.resize(frame, width=400)
+        #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        #gray = cv2.GaussianBlur(gray, (7, 7), 0)
 
-            #frame = imutils.resize(frame, width=500, height=500)
-           # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-           # frame = np.dstack([frame, frame, frame])
+        # encode the frame in JPEG format
+        (flag, encodedImage) = cv2.imencode(".jpeg", frame)
+        # ensure the frame was successfully encoded
+        if not flag:
+            continue
 
-
-            ret, buffer = cv2.imencode('.jpeg', frame)
-
-
-            # time when we finish processing for this frame
-            new_frame_time = time.time()
-
-            # Calculating the fps
-
-            #my_image = Image.fromarray(frame)
-            #d1 = ImageDraw.Draw(my_image)
-
-            # converting the fps into integer
-
-            fps = 1 / (new_frame_time - prev_frame_time)
-            prev_frame_time = new_frame_time
-
-
-            fps = int(fps)
-            print("Running at"+str(fps) +"fps")
-
-            #d1.text((0, 0), "Running at :"+" "+str(fps_real)+ " FPS", fill=(255, 0, 0))
-            #img_byte_arr = io.BytesIO()
-            #my_image.save(img_byte_arr, format='JPEG')
-
-            #img_byte_arr = img_byte_arr.getvalue()
+        yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
+               bytearray(encodedImage) + b'\r\n')
 
 
 
 
-            # Use putText() method for
-            # inserting text on video
 
 
-
-            frame = buffer.tobytes()
-
-
-
-
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 
 @app.route('/')
@@ -96,5 +65,6 @@ if __name__ == "__main__":
         app.run(debug=False, host='0.0.0.0', port=5000)
 
     except KeyboardInterrupt:
-        camera.release()
+        vs.stop()
+        #camera.release()
         print('KeyboardInterrupt exception is caught')
