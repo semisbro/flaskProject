@@ -2,7 +2,7 @@ import cv2
 import cv2
 
 
-def get_available_camera_port() -> tuple[list[int], list[int], list[int]]:
+def get_available_camera_port() :
     non_working_ports = []
     dev_port = 0
     working_ports = []
