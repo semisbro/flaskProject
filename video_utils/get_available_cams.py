@@ -30,3 +30,5 @@ def get_available_camera_port() :
     return working_ports[0]
 
 
+print(get_available_camera_port())
+
