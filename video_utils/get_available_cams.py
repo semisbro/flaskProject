@@ -23,10 +23,7 @@ def get_available_camera_port() -> int:
                 print("Port %s for camera ( %s x %s) is present but does not reads." % (dev_port, h, w))
                 available_ports.append(dev_port)
         dev_port += 1
-
-    if not working_ports:
-        raise Exception("No Cameras attached, please  ensure that one camera is working")
-    return working_ports[0]
+    return available_ports, working_ports, non_working_ports
 
 
 print(get_available_camera_port())
