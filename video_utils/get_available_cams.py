@@ -26,3 +26,6 @@ def list_ports():
                 available_ports.append(dev_port)
         dev_port +=1
     return available_ports,working_ports,non_working_ports
+
+
+print(list_ports())
