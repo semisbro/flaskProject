@@ -11,6 +11,8 @@ import psutil
 import cv2
 from imutils.video import VideoStream
 
+from video_utils.get_available_cams import get_available_camera_port
+
 
 def make_celery(app):
     celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
@@ -28,7 +30,7 @@ def make_celery(app):
     return celery
 
 
-vs = VideoStream(src=3).start()
+vs = VideoStream(src=get_available_camera_port()).start()
 
 app = Flask(__name__)
 app.config.update(

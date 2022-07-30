@@ -11,7 +11,7 @@ from PIL import Image, ImageFont, ImageDraw
 from imutils.video import VideoStream
 
 app = Flask(__name__)
-vs = VideoStream(src=0).start()
+vs = VideoStream(src=get_available_camera_port()).start()
 
 
 
