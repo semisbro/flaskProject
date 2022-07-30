@@ -10,6 +10,8 @@ import time
 from PIL import Image, ImageFont, ImageDraw
 from imutils.video import VideoStream
 
+from video_utils.get_available_cams import get_available_camera_port
+
 app = Flask(__name__)
 vs = VideoStream(src=get_available_camera_port()).start()
 
